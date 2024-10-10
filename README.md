@@ -46,19 +46,19 @@ data
 │   │   │   talk1.wav
 │   │   │   
 │   │   │   ...
-│   └───train
+│   └───test
 │   │   │
 │   │   │───coughing
-│   │   │   cough1.wav
+│   │   │   cough2.wav
 │   │   │
 │   │   │───laugh
-│   │   │   laugh1.wav
+│   │   │   laugh2.wav
 │   │   │
 │   │   │───mic_tapping
-│   │   │   tap1.wav
+│   │   │   tap2.wav
 │   │   │
 │   │   │───talking
-│   │   │   talk1.wav
+│   │   │   talk2.wav
 │   │
 └───augmented_audio
 │   │

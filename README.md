@@ -9,20 +9,20 @@ This section guides you through setting up the necessary environment for the pro
 1. Create and activate the Conda environment:
 
 ```bash
-user123 ~% conda env create -f conda.yml
-user123 ~% conda activate vsdpy310
+user123 % conda env create -f conda.yml
+user123 % conda activate vsdpy310
 ```
 
 2. Install or update the IPython kernel: This step ensures that you have the correct IPython kernel installed, which is useful for running Jupyter notebooks, if you decide to use them for development or analysis.
 
 ```bash
-user123 ~% conda install ipykernel --update-deps --force-reinstall
+user123 % conda install ipykernel --update-deps --force-reinstall
 ```
 
 3. Create a directory called `data`, where the training data are expected to be found.
 
 ```bash
-user123 ~% mkdir data
+user123 % mkdir data
 ```
 
 The folder structure is expected to be as follows:
@@ -117,6 +117,6 @@ One can customize the inference parameters by editing the `run_inference.sh` scr
 Important note: You need to ensure that the files `train_model.sh` and `run_inference.sh` are executable. To do this manually, one can simply execute the following commands on the project root folder.
 
 ```bash
-user123 ~% chmod +x train_model.sh
-user123 ~% chmod +x run_inference.sh
+user123 % chmod +x train_model.sh
+user123 % chmod +x run_inference.sh
 ```

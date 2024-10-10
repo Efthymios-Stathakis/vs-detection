@@ -112,7 +112,7 @@ One can customize the inference parameters by editing the `run_inference.sh` scr
 - CHUNK_LEN: 2
 - SR: 16000
 - N_CATEGORIES: 2
-- METHOD=mfcc_small
+- METHOD: mfcc_small
 
 Important note: You need to ensure that the files `train_model.sh` and `run_inference.sh` are executable. To do this manually, one can simply execute the following commands on the project root folder.
 

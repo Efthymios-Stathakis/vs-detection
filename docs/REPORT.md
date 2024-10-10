@@ -24,7 +24,7 @@ We observe that the audio clips have varying length from a few seconds up to mor
   
 An added benefit is that for longer clips, we may generate several samples. For instance, the `Crowd Talking` category contains only five audio clips, with long durations. Segmentation allows to increase the number of samples in this class.
 
-### 1.1 Data augmentation
+### 1.2 Data augmentation
 
 To improve the robustness and generalization of a model, one can employ various audio data augmentation techniques. Two  methods that can be used are frequency masking and noise addition:
 
@@ -36,20 +36,20 @@ To improve the robustness and generalization of a model, one can employ various 
 
 **Note**: The folder `101846__stereodivo__vox_squad_laughing` was removed from the data because it needed special treatment.
 
-### 1.2 Data Segmentation
+### 1.3 Data Segmentation
 
 We have observed that `cough` audio clips, multiplex cough sounds with silence. However, we know the segments of the clip, containing the sounds (provided in accompanying files called `label.label`). We use these annotated segments of length $$n \triangleq d \times sr$$, where $$d$$ is duration in seconds and $$sr$$ is the sample rate. We have two cases:
 
 - The $k$-th annotated segment duration $d_k$ exceeds the max chunk duration, i.e., $d_k > d$. In this case, we simply keep the first `n` samples, and discard the remaining ones.
-- The $k$-th annotated segment duration $d_k$ is less than max chunk duration, i.e., $d_k < d$.. In this case, we pad the segment, on both ends, with zeros (silence). In particular, we **randomly** split the total silence time $d-d_k$ into two parts, which are used to pad the clip from the left and the right ends.
+- The $k$-th annotated segment duration $d_k$ is less than max chunk duration, i.e., $d_k < d$. In this case, we pad the segment, on both ends, with zeros (silence). In particular, we **randomly** split the total silence time $d-d_k$ into two parts, which are used to pad the clip from the left and the right ends.
 
 In our experiment, we chose $d=2$ seconds, by inspecting the histogram of `cough` durations, shown below. We find out that approximately $2$ seconds, shown as the black vertical line, correspond to the `97.5-th percentile of all cough duration` and thereby represents the majority of our data distribution. Hence, we chose the chunk duration to be $d=2$ seconds.
 
-<img src="./figures/cough_histogram.png" alt="Figure 1: Cough Duration Histogram" style="width: 100%; max-width: 400px;">
+<img src="./figures/cough_histogram.png" alt="Figure 1: Cough Duration Histogram" style="width: 100%; max-width: 300px;">
 
 For other, non-cough, of the audio clips, we simply segment in chunks of length $d$, as illustrated in the figure below.
 
-<img src="./figures/audio_talk_chunk_20sec with_chunks.png" alt="Figure 1: Cough Duration Histogram" style="width: 100%; max-width: 800px;">
+<img src="./figures/audio_talk_chunk_20sec with_chunks.png" alt="Figure 1: Cough Duration Histogram" style="width: 100%; max-width: 600px;">
 
 ## 2. Vocal sound modelling
 

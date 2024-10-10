@@ -11,7 +11,7 @@ METHOD="mfcc_small"
 usage() {
     echo "Usage: $0 <keyword>"
     echo "Available keywords:"
-    echo "  mels_big", "mels_small", "mfcc_big", "mfcc_small"
+    echo "mels_big", "mels_small", "mfcc_big", "mfcc_small"
     exit 1
 }
 

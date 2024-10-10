@@ -1,15 +1,16 @@
 # vs-detection
 
-This project implements a vocal sound classification system using various audio processing techniques and machine learning models. It aims to distinguish between four types of vocal sounds namely, `cough`, `laugh`, `mic tapping` and `people talking`, with focus on `cough`.
+This project implements a vocal sound classification system using various audio processing techniques and machine learning models. It aims to distinguish between four types of vocal sounds namely, `cough`, `laugh`, `mic tapping` and `people talking`, with focus on `cough`. The project contains independent audio samples, which are not part of the model training or validation. These are available under the folder `samples` and can be used as real-world examples. If you want to test a model on your won `.wav` files, you can simply place them in this folder and run inference, as explained in the last section.
 
 ## 1. Setup
 
 This section guides you through setting up the necessary environment for the project.
 
-1. Create and activate the Conda environment:
+1. Create and activate the Conda environment, which is called `vsdpy310`:
 
 ```bash
 user123 % conda env create -f conda.yml
+user123 % conda deactivate
 user123 % conda activate vsdpy310
 ```
 
@@ -19,13 +20,14 @@ user123 % conda activate vsdpy310
 user123 % conda install ipykernel --update-deps --force-reinstall
 ```
 
-3. Create a directory called `data`, where the training data are expected to be found.
+1. Create two directories: One directory is called `data`; this is where the training/validation data is expected to reside. The other directory is called `model`; this is where trained models and pertinent parameters are saved.
 
 ```bash
 user123 % mkdir data
+user123 % mkdir model
 ```
 
-The folder structure is expected to be as follows:
+The folder structure for `data` is expected to be as follows:
 
 ```
 data 
@@ -105,7 +107,7 @@ To run inference on a trained model, you need first to activate the conda enviro
 ./run_inference.sh
 ```
 
-This bash script will execute the `test_samples.py` python script, with the specified parameters. This script takes a list of audio samples, segments each of them into chunks of duration `CHUNK_LEN` and performs chunk-wise predictions. **This resembles real-life situations, where we continuously monitor the sounds and perform low-latency preodiction.**
+This bash script will execute the `test_samples.py` python script, with the specified parameters. This script takes a list of audio samples, segments each of them into chunks of duration `CHUNK_LEN`, with a rolling window of $0.5$ seconds, and performs chunk-wise predictions. **This resembles real-life situations, where we continuously monitor the sounds and perform low-latency preodiction.**
 
 One can customize the inference parameters by editing the `run_inference.sh` script. It uses default values for the parameters, which can be modified in the script if needed:
 
@@ -120,3 +122,5 @@ Important note: You need to ensure that the files `train_model.sh` and `run_infe
 user123 % chmod +x train_model.sh
 user123 % chmod +x run_inference.sh
 ```
+
+Important note: When running inference on the provided samples, make sure that you use a combination for which you have trained a model!

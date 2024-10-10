@@ -6,7 +6,7 @@ CHUNK_LEN=2
 VERBOSE=0
 SR=16000
 N_CATEGORIES=2
-METHOD="mels_big"
+METHOD="mfcc_big"
 
 # Function to display usage
 usage() {

@@ -30,26 +30,6 @@ def create_mfcc(
     mfcc_arr = mfcc(y=audio_signal, sr=sr, hop_length=hop_length, n_fft=n_fft, n_mfcc=n_mfcc)
     return np.swapaxes(mfcc_arr, 0, 1)
     
-# def save_spectrogram(
-#     audio_signal, 
-#     sr:int,
-#     image_file:str,
-#     hop_length:int = 128,
-#     n_mels:int = 224,
-#     n_fft:int = 2048,
-#     verbose: int = 0
-# ) -> None:
-#     fig = plt.figure()
-#     ax = fig.add_subplot(1, 1, 1)
-#     fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
-
-#     mel_arr = create_mels(audio_signal, sr, hop_length, n_mels, n_fft)
-#     librosa.display.specshow(mel_arr, sr=sr)
-
-#     if verbose: print(mel_arr.shape)
-#     fig.savefig(image_file)
-#     plt.close(fig)
-    
 def save_spectrogram(input_arr, sr:int, image_file:str) -> None:
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
@@ -66,15 +46,16 @@ def get_features(
     params = {}, 
     output_dir : str = None, 
     verbose : int = 0):
-    """ This module takes in an audio and extracts multiple Mel spectrograms. We 
-    deal with two cases:
+    """ This module takes in an audio and extracts Mel spectrograms or Mel Frequency
+    components. We deal with two cases:
     1. Cough audio files: These files contain annotated cough segments, which are 
-    explicitly extracted. If the chunk duration is smaller that `chunk_len`then we 
-    add equal amount of silence on both ends. 
+    explicitly extracted. If the chunk duration is smaller that `chunk_len` then we 
+    add random amount of silence on each ends, such that the total duration equals 
+    `chunk_len`. 
     
     2. For audio files that are not cough, there is no silence so we chunk them 
     directly into segments of length `chunk_len`, but we skip `chunk_len` seconds 
-    to avoid high correlation between contiguous.
+    to avoid high correlation between contiguous segments.
 
     Args:
         audio_files (list[str]): List of audio (.wav) files
@@ -85,6 +66,7 @@ def get_features(
         verbose (int, optional): Prints out information => Defaults to 0.
     """
     
+    np.random.seed(48)
     feature_list = []
     for audio_file, label_file in zip(audio_files, label_files):
         
@@ -95,17 +77,15 @@ def get_features(
         
         y, sr = librosa.load(audio_file, sr=sr)
         if len(label_df[duration_col].values.tolist()) == 0:
-            # print(f"Chopping the entire wav file in {chunk_len}sec segments with {chunk_len} hop windows")
-            start_times = np.arange(sr, len(y) - chunk_len*sr, chunk_len*sr) // sr
+            start_times = np.arange(0, len(y) - chunk_len*sr, chunk_len*sr) // sr
             durations   = [chunk_len] * len(start_times)
         else:
-            # print("Using the annotated segments")
             start_times = label_df["Time(Seconds)"].values.tolist()
             durations   = label_df[duration_col].values.tolist()
         for idx, (start_time, duration) in enumerate(zip(start_times, durations)):
-            end_time   = start_time + min(duration, chunk_len)
+            end_time  = start_time + min(duration, chunk_len)
             start_idx = int(np.floor(start_time * sr))
-            end_idx   = int( np.ceil(end_time   * sr))
+            end_idx   = int(np.ceil( end_time   * sr))
             filename = basename + f"_{idx}"
             if verbose: 
                 print(f"{filename}: Start {start_time:.2f} || end {end_time:.2f} || sr {sr}")
@@ -120,8 +100,8 @@ def get_features(
                      audio_signal, 
                      np.zeros(pad_right,))) 
                 
-            # Check the dicionary inputs to figure out if we want Mel spectrogram
-            # or if we want the Mel frequency coefficients
+            # Check the dicionary inputs to figure out if we want Mel 
+            # spectrogram or if we want the Mel frequency coefficients
             if "n_mels" in params: 
                 spectral_arr = create_mels(audio_signal, sr, **params)
             elif "n_mfcc" in params: 

@@ -89,10 +89,10 @@ Available options for the `--method` argument are shown in the table below. For 
 
 | Method     | Configuration                                              | Array Size   |
 |------------|-----------------------------------------------------------|--------------|
-| mels_big   | {"hop_length": 128, "n_fft": 2048, "n_mels": 224}         | (63, 64)     |
+| mels_big   | {"hop_length": 128, "n_fft": 2048, "n_mels": 224}         | (224, 251)   |
 | mels_small | {"hop_length": 256, "n_fft": 2048, "n_mels": 128}         | (126, 128)   |
 | mfcc_big   | {"hop_length": 256, "n_fft": 2048, "n_mfcc": 128}         | (126, 128)   |
-| mfcc_small | {"hop_length": 512, "n_fft": 2048, "n_mfcc":  64}         | (224, 251)   |
+| mfcc_small | {"hop_length": 512, "n_fft": 2048, "n_mfcc":  64}         | (63, 64)     |
 
 The `--n_categories` argument can be set to either $2$ or $4$.
 It is recommended to use the default value for the sampling rate $sr=16000$.

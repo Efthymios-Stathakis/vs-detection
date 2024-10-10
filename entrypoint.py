@@ -101,7 +101,7 @@ if __name__ == "__main__":
     hist = model.fit(X_train_norm, y_train_encoded, 
                  validation_data=(X_test_norm, y_test_encoded), 
                  batch_size=16, 
-                 epochs=20)
+                 epochs=25)
     
     logger.info("Model training completed")
 
@@ -111,9 +111,9 @@ if __name__ == "__main__":
     logger.info(f"Model saved to {model_path}")
 
     # Optionally, you can also save the model weights separately
-    weights_path = f"./model/{method}_{n_categories}_n_cat_cnn_weights.h5"
-    model.save_weights(weights_path)
-    logger.info(f"Model weights saved to {weights_path}")
+    # weights_path = f"./model/{method}_{n_categories}_n_cat_cnn_weights.h5"
+    # model.save_weights(weights_path)
+    # logger.info(f"Model weights saved to {weights_path}")
    
     # Save the model and preprocessing paraemters
     train_params = {
@@ -123,7 +123,7 @@ if __name__ == "__main__":
         "X_train_max" : X_train.max(),
         "X_train_min" : X_train.min()
         }
-    json_path    = f"../model/{method}_{n_categories}_n_cat_params.json"
+    json_path    = f"./model/{method}_{n_categories}_n_cat_params.json"
     with open(json_path, 'w') as f:
         json.dump(train_params, f )
     logger.info(f"Training parameters saved to {json_path}")

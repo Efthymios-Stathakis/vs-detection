@@ -52,3 +52,5 @@ Sounds is a sequential signal, but it can be transformed into an image via the s
 It is a standard practise to split a dataset into two or three parts, namely `train`, `validation` and some times `test`. The most common way of splitting the data is to take to randomly assign samples to train and validation dataset, in a stratified manner to maintain the balance of the classes. However, we claim that this process is not suitable for our dataset.
 
 We have chosen to split the data for train and test by assigning **entire clips in each group**. Hence, all the underlying chunks of the same clip will belong to either the `train` or the `validation` datset. The reason for this is simple; if we randomly split our chunks into train and test after segmentation then we have a risk of data leakage. The reason is the exact same, for which we chose to skip every other chunk as described above.
+
+For instance if we look at the first three cough sounds from `/coughing_batch_2/coughconcat22/data.wav` then we can easily infer that they come from the same person. In case, one or two of these chunks end up in the training data while the remaining in the test set.

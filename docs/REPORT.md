@@ -26,9 +26,9 @@ An added benefit is that for longer clips, we may generate several samples. For 
 
 ### 1.2 Data augmentation
 
-To improve the robustness and generalization of a model, one can employ various audio data augmentation techniques. Two methods, that can be used, are frequency masking and noise addition:
+To improve the robustness and generalization of a model, one can employ various audio data augmentation techniques. Some methods, that can be used, are frequency masking, noise addition and, of course, public datasets:
 
-1. Open dataset usage: Audio classification is a popular and there are several open-source datasets that can be used to augment the data. In fact, we have added some audio clips to the `laughing` category from the [VocalSound](https://github.com/YuanGongND/vocalsound) dataset, which contains samples from different categories, including `coughing` and `laughter`.
+1. Open dataset usage: Audio classification is a popular topic and there are several open-source datasets that can be used to augment the data. In fact, we have added some audio clips to the `laughing` category from the [VocalSound](https://github.com/YuanGongND/vocalsound) dataset, which contains samples from different categories, including `coughing` and `laughter`.
 
 2. Noise Addition: This method involves adding random noise to the audio signal. By introducing controlled amounts of noise, we can help the model learn to distinguish between relevant audio features and background noise. This is especially important for real-world applications where clean audio signals are rare. This is already part of the dataset, in particular, the audio clips in the folders `mix{k}_cough_train` where k=1,2,3 or 4 contain background noise.
 
@@ -40,7 +40,7 @@ To improve the robustness and generalization of a model, one can employ various 
 
 We have observed that `cough` audio clips, multiplex cough sounds with silence. However, we know the segments of the clip, containing the sounds (provided in accompanying files called `label.label`). We use these annotated segments of length $$n \triangleq d \times sr$$, where $$d$$ is duration in seconds and $$sr$$ is the sample rate. We have two cases:
 
-- The $k$-th annotated segment duration $d_k$ exceeds the max chunk duration, i.e., $d_k > d$. In this case, we simply keep the first `n` samples, and discard the remaining ones.
+- The $k$-th annotated segment duration $d_k$ exceeds the max chunk duration, i.e., $d_k \geq d$. In this case, we simply keep the first `n` samples, and discard the remaining ones.
 - The $k$-th annotated segment duration $d_k$ is less than max chunk duration, i.e., $d_k < d$. In this case, we pad the segment, on both ends, with zeros (silence). In particular, we **randomly** split the total silence time $d-d_k$ into two parts, which are used to pad the clip from the left and the right ends.
 
 In our experiment, we chose $d=2$ seconds, by inspecting the histogram of `cough` durations, shown below. We find out that approximately $2$ seconds, shown as the black vertical line, correspond to the `97.5-th percentile of all cough duration` and thereby represents the majority of our data distribution. Hence, we chose the chunk duration to be $d=2$ seconds.
@@ -55,23 +55,25 @@ For other, non-cough, of the audio clips, we simply segment in chunks of length 
 
 ## 2.1 Preparing data for audio classification
 
-Sounds is a sequential signal, but it can be transformed into an image, which allows to use computer vision techniques, like [Convolutional Neural Networks](https://en.wikipedia.org/wiki/Convolutional_neural_network), which have the added advantage that their implementation can be parallelized. Two ways to extract arrays from sound signal are the [Mel Spectrogram](https://en.wikipedia.org/wiki/Spectrogram) and the [Mel Frequency Cepstral Coefficients](https://en.wikipedia.org/wiki/Mel-frequency_cepstrum). Below, we see how these two spectral representation look like for coughing for coughing:
+Sounds is a sequential signal, but it can be transformed into an image, which enables us to use computer vision techniques, like [Convolutional Neural Networks](https://en.wikipedia.org/wiki/Convolutional_neural_network), which have the added advantage that their implementation can be parallelized. Two ways to extract arrays from a sound signal are the [Mel Spectrogram](https://en.wikipedia.org/wiki/Spectrogram) and the [Mel Frequency Cepstral Coefficients](https://en.wikipedia.org/wiki/Mel-frequency_cepstrum). Below, we see how these two spectral representation look like for coughing for coughing:
 
 <img src="./figures/melspectrogram_mfcc.png" alt="Figure 1: Cough Duration Histogram" style="width: 100%; max-width: 800px;">
 
-In this modelling task, we will experiment with both spectral representation to create a model for vocal sound classification.
+In this modelling task, we will experiment with both spectral representations, to create a model for vocal sound classification.
 
 ## 2.2 Train-test split
 
-It is a standard practise to split a dataset into two or three parts, namely `train`, `validation` and some times `test`. The most common way of splitting the data is to take to randomly assign samples to train and validation dataset, in a stratified manner to maintain the balance of the classes. However, we claim that this process is **not suitable** for our dataset.
+It is a standard practice to split a dataset into two or three parts, namely `train`, `validation` and some times `test`. The most common way of splitting the data is to take to randomly assign samples to train and validation dataset, in a stratified manner to maintain the balance of the classes. However, we claim that this process is **not suitable** for our dataset.
 
-We have chosen to split the data for train and validation by assigning **entire clips in each group**. Hence, all the underlying chunks of the same clip will belong to either the `train` or the `validation` datset. The reason for this is simple; if we randomly split our chunks into train and test after segmentation then we have a risk of *data leakage*. The reason is that a single audio clip may contain correlated samples. For instance, let us we look at the first three cough sounds from `/coughing_batch_2/coughconcat22/data.wav`, which come from the same person. In case, one or two of these chunks ends up in the training data while the remaining in the validation set then it would be easy for the model to classify the coreresponding chunk.
+We have chosen to split the data for train and validation by assigning **entire clips in each group**. Hence, all the underlying chunks of the same clip will belong to either the `train` or the `validation` datset. The reason for this is simple; if we randomly split our chunks into train and test after segmentation then we have a risk of *data leakage*. The reason is that a single audio clip may contain correlated samples. For instance, let us we look at the first three cough sounds from `/coughing_batch_2/coughconcat22/data.wav`, which come from the same person. If one or two of these chunks ends up in the training data while the remaining in the validation set then it would be easy for the model to classify the corresponding chunk.
 
 <img src="./figures/coughing_batch_2_coughconcat22_3_chunks.png" alt="Figure 1: Cough Duration Histogram" style="width: 200%; max-width: 1000px;">
 
+Our method of splitting the data by audio clip assignment, instead of chunk assignment, is more robust and also better resembles real-world deployment, where we test the model in entirely new clips, hence we also test the model generalization capabilities.
+
 ## 3. Results
 
-We have conducting some experiments, for different combinations of audio visualization, either `Mel spectrogram` or `MFCC` as well as treating `Tapping`, `Talking` and `Laughing` as a category called `Other`. This is done since we are mainly interested in understanding `Cough`. We show below the results, namely confusion matrix, precision, recall and $f_1$ score, for $4$ different combinations.
+We have conducted some experiments, for different combinations of audio visualization techniques, using either `Mel spectrogram` or `MFCC`. We have also chosen, in many cases, to treat `Tapping`, `Talking` and `Laughing` as a single category called `Other`. This is done since we are mainly interested in understanding `Cough`. We show below the results, namely confusion matrix, precision, recall and $f_1$ score, for $4$ different combinations.
 
 #### n_categories = 2,  method="mfcc_big"
 
@@ -119,8 +121,8 @@ We have conducting some experiments, for different combinations of audio visuali
 - Recall: 0.9101
 - $f_1$ score: 0.8852
 
-From the last combination, we can see that the $4$ categories are not equally balanced in the test dataset, however the situation improves when we combine `Tapping`, `Talking` and `Laughing` into `Other`, which makes the two resulting classes almost equally balanced. The performance is roughly the same for different combinations, hence it makes sence to choose the smallest model which would entail the lowest latency. However, the results could change if we had more data to balance out the original classes.
+From the last combination, we can see that the $4$ categories are not equally balanced in the test dataset, however the situation improves when we combine `Tapping`, `Talking` and `Laughing` into `Other`, which makes the two resulting classes almost equally balanced. The performance is roughly the same for different combinations, hence it makes sence to choose the smallest model, namely for `mfcc_small`, which would entail the lowest latency. However, the results could change if we had more data to balance out the original classes.
 
-Augmenting the dataset with more sample, would help build a more accurate model, since some of these vocal sounds have similar spectral characteristics, e.g., `laughter` and `coughing`. The `samples` folder contains entirely different data, where we can test our model. There, an interesting observation is that `throat_clearing` is labeled as cough (since we do not have such a label in our data). However, this is intuitively expected since both sounds have similar characteristics.
+Augmenting the dataset with more samples, would help build a more accurate model, since some of these vocal sounds have similar spectral characteristics, e.g., `laughter` and `coughing`. The `samples` folder contains entirely different data, where we can test our model. There, an interesting observation is that `throat_clearing` is labeled as cough (since we do not have such a label in our data). However, this is intuitively expected since both sounds have similar characteristics.
 
-IMPORTANT NOTE: It should be noted here that in rare occassion the training may get stuck in local minima, resulting in poor performance, in which case we need to retrigger the training script.
+IMPORTANT NOTE: It should be noted here that in rare occassions the training may get stuck in local minima, resulting in poor performance, in which case we need to retrigger the training script.

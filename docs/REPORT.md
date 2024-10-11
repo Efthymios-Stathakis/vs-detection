@@ -10,14 +10,14 @@ In this project, we are tackling the problem of cough detection. This report det
 
 ### 1.1 First principles
 
-We have a dataset that represents four vocal sound categorie
+We have a dataset that represents four vocal sound categories:
 
 - Cough
 - Laughter
-- Tapping
+- Mic Tapping
 - Crowd talking
 
-We observe that the audio clips have varying length from a few seconds up to more than two minutes. To prepare the data for modelling purposes, as well as, for the purpose of better capturing temporally local features, we segment the audio clips into **roughly equally sized chunks of preselected duration**, hereafter denoted as  $d$. This serves a dual purpose.
+We observe that the audio clips have varying lengths, ranging from a few seconds up to more than two minutes. To prepare the data for modelling purposes, as well as, for the purpose of better capturing temporally local features, we segment the audio clips into **equally sized chunks of preselected duration**, hereafter denoted as  $d$. This serves a dual purpose.
 
 - Our solution resembles a realistic scenario where the classification takes place in **near-real time**, for latency-critical applications.
 - We normalize the input data to so that our input samples represent a similar amount of information.
@@ -26,7 +26,7 @@ An added benefit is that for longer clips, we may generate several samples. For 
 
 ### 1.2 Data augmentation
 
-To improve the robustness and generalization of a model, one can employ various audio data augmentation techniques. Two  methods that can be used are frequency masking and noise addition:
+To improve the robustness and generalization of a model, one can employ various audio data augmentation techniques. Two methods, that can be used, are frequency masking and noise addition:
 
 1. Open dataset usage: Audio classification is a popular and there are several open-source datasets that can be used to augment the data. In fact, we have added some audio clips to the `laughing` category from the [VocalSound](https://github.com/YuanGongND/vocalsound) dataset, which contains samples from different categories, including `coughing` and `laughter`.
 

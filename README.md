@@ -96,7 +96,7 @@ Available options for the `--method` argument are shown in the table below. For 
 | mfcc_big   | {"hop_length": 256, "n_fft": 2048, "n_mfcc": 128}         | (126, 128)   |
 | mfcc_small | {"hop_length": 512, "n_fft": 2048, "n_mfcc":  64}         | (63, 64)     |
 
-The `--n_categories` argument can be set to either $2$ or $4$. If you choose $2$, then `laugh`, `mic tapping` and `people talking` are squeezed into a new category called `other`, otherwise for `n_categories`=$4$, we use the original labels.
+The `--n_categories` argument can be set to either $2$ or $4$. If you choose $2$, then `laugh`, `mic_tapping` and `people_talking` are squeezed into a new category called `other`, otherwise for `n_categories`= $4$, we use the original labels.
 It is recommended to use the default value for the sampling rate $sr=16000$.
 
 ## 3. Running Inference
